@@ -31,3 +31,12 @@ for i, line in enumerate(lines):
 
 train_data, test_data = sklMS.train_test_split(processed_lines, test_size=0.25, train_size=0.75)
 
+lambdaOne = [0, 10**-6, 10**-5, 10**-4, 10**-3, 10**-2, 10**-1, 1]
+lambdaTwo = [0, 10**-6, 10**-5, 10**-4, 10**-3, 10**-2, 10**-1, 1]
+
+for lda1 in lambdaOne:
+    for lda2 in lambdaTwo:
+        alpha = lda1 + lda2
+        l1_ratio = lda1 / alpha
+
+
