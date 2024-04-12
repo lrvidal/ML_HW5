@@ -1,6 +1,7 @@
 import random
 import sklearn.model_selection as sklMS
 import sklearn.linear_model as sklLM
+from sklearn.metrics import mean_squared_error
 
 input_file = "./abalone.data"
 
@@ -43,7 +44,12 @@ for lda1 in lambdaOne:
 
 
 def MSE(model, dataset):
-    return sum([(model.predict([item])[0] - item[-1])**2 for item in dataset]) / len(dataset)
+    y_pred = []
+    y_true = []
+    for item in dataset:
+        y_pred.append(model.predict([item])[0])
+        y_true.append(item[-1])
+    return mean_squared_error(y_true=y_true, y_pred=y_pred)
 
 m1 = models.copy()
 m2 = models.copy()

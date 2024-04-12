@@ -1,29 +1,21 @@
 import sklearn.model_selection as sklMS
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import zero_one_loss
+from sklearn.metrics import confusion_matrix
 
 def zeroOneLoss(model, dataset):
-    data = [[0, 0, 0, 0], 0.0]
+    y_pred = []
+    y_true = []
     for item in dataset:
-        if model.predict([item])[0] == item[-1]:
-            if item[-1] == 0:
-                data[0][0] += 1
-            else:
-                data[0][1] += 1
-            data[1] += 0
-        else:
-            if item[-1] == 1:
-                data[0][2] += 1
-            else:
-                data[0][3] += 1
-            data[1] += 1
-    data[1] /= len(dataset)
-    return data
+        y_pred.append(model.predict([item])[0])
+        y_true.append(item[-1])
+    return zero_one_loss(y_true=y_true, y_pred=y_pred), confusion_matrix(y_true=y_true, y_pred=y_pred)
 
 def printConfusionMatrix(data):
     print("       Negative   |   Positive")
     print("--------------------------------")
-    print("True:   {}      |     {}".format(data[0], data[1]))
-    print("False:  {}        |     {}".format(data[2], data[3]))
+    print("True:   {}      |     {}".format(data[0][0], data[1][1]))
+    print("False:  {}        |     {}".format(data[1][0], data[0][1]))
 
 input_file = "./cammeo_osmancik.data"
 mapping = {
@@ -64,17 +56,17 @@ for data in validate_data:
     l2regPredicts.append(l2regModel.predict([data])[0])
     noneregPredicts.append(noneregModel.predict([data])[0])
 
-l2data01, l2reg01 = zeroOneLoss(l2regModel, validate_data)
-nonedata01, nonereg01 = zeroOneLoss(noneregModel, validate_data)
+l2ZeroOne, l2Confusion = zeroOneLoss(l2regModel, validate_data)
+noneZeroOne, noneConfusion = zeroOneLoss(noneregModel, validate_data)
 
-print("L2 Regularization 0-1 Loss: {}".format(l2reg01))
-printConfusionMatrix(l2data01)
-print("No Regularization 0-1 Loss: {}".format(nonereg01))
-printConfusionMatrix(nonedata01)
+print("L2 Regularization 0-1 Loss: {}".format(l2ZeroOne))
+printConfusionMatrix(l2Confusion)
+print("No Regularization 0-1 Loss: {}".format(noneZeroOne))
+printConfusionMatrix(noneConfusion)
 
 bestModel = LogisticRegression(penalty=None)
 bestModel.fit(train_data + validate_data, [item[-1] for item in (train_data + validate_data)])
 
-testData01, testReg01 = zeroOneLoss(bestModel, test_data)
-print("Test Data 0-1 Loss: {}".format(testReg01))
-printConfusionMatrix(testData01)
+testZeroOne, testConfusion = zeroOneLoss(bestModel, test_data)
+print("Test Data 0-1 Loss: {}".format(testZeroOne))
+printConfusionMatrix(testConfusion)
