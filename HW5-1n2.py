@@ -28,8 +28,9 @@ for i, line in enumerate(lines):
     floats.append(int(data[-1]))
     processed_lines.append(floats)
 
-test_data, rest = sklMS.train_test_split(processed_lines, test_size=0.2, train_size=0.8)
-validate_data, train_data = sklMS.train_test_split(rest, test_size=0.25, train_size=0.75)
+rest, test_data = sklMS.train_test_split(processed_lines, test_size=0.2, train_size=0.8, random_state=42)
+train_data, validate_data = sklMS.train_test_split(rest, test_size=0.25, train_size=0.75, random_state=42)
+
 lambdaOne = [0, 10**-6, 10**-5, 10**-4, 10**-3, 10**-2, 10**-1, 1]
 lambdaTwo = [0, 10**-6, 10**-5, 10**-4, 10**-3, 10**-2, 10**-1, 1]
 
